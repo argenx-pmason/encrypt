@@ -5,7 +5,9 @@ import { Box, Button, TextField } from "@mui/material";
 function App() {
   const { host } = window.location,
     urlPrefix = window.location.protocol + "//" + window.location.host,
-    webDavPrefix = urlPrefix + "/lsaf/webdav/repo";
+    webDavPrefix = urlPrefix + "/lsaf/webdav/repo",
+    queryParameters = new URLSearchParams(window.location.search),
+    app = queryParameters.get("app") ? queryParameters.get("app") : null;
   let realhost;
   if (host.includes("sharepoint")) {
     realhost = "xarprod.ondemand.sas.com";
@@ -15,6 +17,7 @@ function App() {
     realhost = host;
   }
   const api = "https://" + realhost + "/lsaf/api",
+    [message, setMessage] = useState(null),
     [username, setUsername] = useState(""),
     [userFullName, setUserFullName] = useState(""),
     [password, setPassword] = useState(""),
@@ -97,9 +100,17 @@ function App() {
         <Button
           variant="contained"
           color="success"
-          onClick={() =>
-            encryptPassword(api, username, password, setEncryptedPassword)
-          }
+          onClick={() => {
+            encryptPassword(
+              api,
+              username,
+              password,
+              setEncryptedPassword,
+              setMessage,
+              urlPrefix,
+              app
+            );
+          }}
           sx={{ ml: "10px" }}
         >
           Encrypt & Save
@@ -124,9 +135,11 @@ function App() {
             label="Encrypted Password stored in Local Storage"
             value={encryptedPassword}
             disabled
-            sx={{ ml: "10px", width: "600px" }}
+            sx={{ ml: "10px", width: "600px", flexGrow: 1 }}
           />
         )}
+        <p />
+        {message && <Box sx={{ backgroundColor: "yellow" }}> {message}</Box>}
       </Box>
     </div>
   );

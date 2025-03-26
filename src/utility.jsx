@@ -4,7 +4,10 @@ export const encryptPassword = (
   api,
   username,
   password,
-  setEncryptedPassword
+  setEncryptedPassword,
+  setMessage,
+  urlPrefix,
+  app
 ) => {
   const url = api + "/encrypt",
     myHeaders = new Headers();
@@ -19,15 +22,30 @@ export const encryptPassword = (
     redirect: "follow",
   };
 
-  fetch(url, requestOptions)
+  return fetch(url, requestOptions)
     .then((response) => response.text())
     .then((result) => {
-      console.log("encryptPassword" + result);
-      setEncryptedPassword(result);
-      localStorage.setItem("username", username);
-      localStorage.setItem("encryptedPassword", result);
+      console.log("encryptPassword -", result);
+      if (result.includes("errorCode")) {
+        setMessage(result);
+      } else {
+        setEncryptedPassword(result);
+        localStorage.setItem("username", username);
+        localStorage.setItem("encryptedPassword", result);
+        setMessage("success");
+        setTimeout(() => {
+          window.open(
+            urlPrefix +
+              `/lsaf/filedownload/sdd%3A///general/biostat/apps/${app}/index.html`,
+            "_self"
+          );
+        }, 2000);
+      }
     })
-    .catch((error) => console.error(error));
+    .catch((error) => {
+      console.error(error);
+      setMessage(error);
+    });
 };
 
 export const logon = (api, username, encryptedPassword, setToken) => {
@@ -346,7 +364,7 @@ export const getFileVersions = async (api, token, file) => {
       return response.text();
     })
     .then((responseText) => {
-      const parsed=JSON.parse(responseText)
+      const parsed = JSON.parse(responseText);
       console.log("getFileVersions - responseText", parsed);
       return parsed;
     })
@@ -370,7 +388,7 @@ export const getChildren = async (api, token, path) => {
       return response.text();
     })
     .then((responseText) => {
-      const parsed=JSON.parse(responseText)
+      const parsed = JSON.parse(responseText);
       console.log("getChildren - responseText", parsed);
       return parsed;
     })
@@ -394,7 +412,7 @@ export const checkout = async (api, token, path) => {
       return response.text();
     })
     .then((responseText) => {
-      const parsed=JSON.parse(responseText)
+      const parsed = JSON.parse(responseText);
       console.log("checkout - responseText", parsed);
       return parsed;
     })
@@ -418,7 +436,7 @@ export const checkin = async (api, token, path) => {
       return response.text();
     })
     .then((responseText) => {
-      const parsed=JSON.parse(responseText)
+      const parsed = JSON.parse(responseText);
       console.log("checkin - responseText", parsed);
       return parsed;
     })
@@ -442,7 +460,7 @@ export const undocheckout = async (api, token, path) => {
       return response.text();
     })
     .then((responseText) => {
-      const parsed=JSON.parse(responseText)
+      const parsed = JSON.parse(responseText);
       console.log("undocheckout - responseText", parsed);
       return parsed;
     })
