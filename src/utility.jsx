@@ -33,13 +33,15 @@ export const encryptPassword = (
         localStorage.setItem("username", username);
         localStorage.setItem("encryptedPassword", result);
         setMessage("success");
-        setTimeout(() => {
-          window.open(
-            urlPrefix +
-              `/lsaf/filedownload/sdd%3A///general/biostat/apps/${app}/index.html`,
-            "_self"
-          );
-        }, 2000);
+        if (app) {
+          setTimeout(() => {
+            window.open(
+              urlPrefix +
+                `/lsaf/filedownload/sdd%3A///general/biostat/apps/${app}/index.html`,
+              "_self"
+            );
+          }, 2000);
+        }
       }
     })
     .catch((error) => {
